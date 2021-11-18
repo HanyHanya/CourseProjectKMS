@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
+    private bool _cursorEnabled = false;
+    private FirstPersonController _controller;
     private IInteractable _interactable;
     public IInteractable Interactable
     {
@@ -17,9 +19,15 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void Start()
+    {
+        _controller = GetComponent<FirstPersonController>();
+    }
+
     private void FixedUpdate()
     {
-        if (Physics.Raycast(Camera.main.ScreenPointToRay(Input.mousePosition), out RaycastHit raycastHit)
+        var ray = FocusManager.Instance.CurrentCamera.ScreenPointToRay(Input.mousePosition);
+        if (Physics.Raycast(ray, out RaycastHit raycastHit)
             && raycastHit.transform.TryGetComponent(out IInteractable interactable))
         {
             Interactable = interactable;
@@ -28,5 +36,31 @@ public class PlayerController : MonoBehaviour
         {
             Interactable = null;
         }
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Tab))
+        {
+            UpdateCursorVisible();
+        }
+
+        if (Input.GetMouseButtonDown(0))
+        {
+            Interactable?.OnClicked();
+        }
+    }
+
+    private void UpdateCursorVisible()
+    {
+        _cursorEnabled = !_cursorEnabled;
+        SetCursorVisible(_cursorEnabled);
+    }
+
+    public void SetCursorVisible(bool visible)
+    {
+        Cursor.visible = visible;
+        Cursor.lockState = visible ? CursorLockMode.None : CursorLockMode.Locked;
+        _controller.enabled = !visible;
     }
 }
