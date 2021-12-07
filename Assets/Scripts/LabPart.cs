@@ -26,6 +26,6 @@ public class LabPart : MonoBehaviour, IInteractable
 
     public void OnClicked()
     {
-        FocusManager.Instance.CurrentPart = this;
+        FocusManager.Instance.SetCurrentPart(this);
     }
 }

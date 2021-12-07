@@ -15,24 +15,7 @@ public class FocusManager : MonoBehaviour
     private Camera _startCamera;
 
     public Camera CurrentCamera { get; private set; }
-    public LabPart CurrentPart 
-    {
-        get => _currentPart;
-        set
-        {
-            //OnPartChanged?.Invoke(value);
-            if (_currentPart == value)
-            {
-                StopFocus();
-                _currentPart = null;
-                return;
-            }
-
-            _currentPart = value;
-            StartFocus(_currentPart.transform.position);
-
-        }
-    }
+    public LabPart CurrentPart {get;set;}
 
     private void Awake()
     {
@@ -61,5 +44,23 @@ public class FocusManager : MonoBehaviour
         _fpsController.enabled = true;
         _targetCamera.gameObject.SetActive(false);
         _fpsCamera.gameObject.SetActive(true);
+    }
+
+    public void SetCurrentPart(LabPart value, bool noEvent = false)
+    {
+        if (!noEvent)
+        {
+            OnPartChanged?.Invoke(value);
+        }
+
+        if (_currentPart == value)
+        {
+            StopFocus();
+            _currentPart = null;
+            return;
+        }
+
+        _currentPart = value;
+        StartFocus(_currentPart.transform.position);
     }
 }
